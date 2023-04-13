@@ -1,0 +1,14 @@
+# Local files
+old-build-files/
+.bsp/
+
+# Compiled files
+*.class
+/target/
+/project/
+/out/
+
+# Package files
+*.jar
+*.zip
+*.tar.gz
