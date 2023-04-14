@@ -14,24 +14,6 @@ trait BaseScalaModule extends ScalaModule {
     )
 }
 
-// Here are some helpful tasks
-// =====================================
-// Check out downloaded deps:
-// $ ./mill bar.ivyDepsTree
-//
-// To download deps:
-// $ ./mill bar.resolvedIvyDeps
-//
-// To compile:
-// $ ./mill bar.compile
-//
-// To run:
-// $ ./mill bar.run
-// TODO: Add in a test stage...
-//
-// To package:
-// $ ./mill bar.assembly
-// $ ./out/bar/assmbly.dest/out.jar
 object `bar` extends ScalaModule {
   def scalaVersion = ScalaVersion
 
