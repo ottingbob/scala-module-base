@@ -50,7 +50,12 @@ $ . .zprofile
 ```bash
 $ curl -L https://github.com/com-lihaoyi/mill/releases/download/0.11.0-M7/0.11.0-M7 > mill && chmod +x mill
 ```
-
-##### TODO: Add in editor setup...
-
-
+>
+> [Get metals](https://github.com/scalameta/nvim-metals) this provides LSP support / editor setup
+> This is an [example configuration](https://github.com/scalameta/nvim-metals/discussions/39) for nvim LSP & metals integration
+```lua
+use {
+	'scalameta/nvim-metals',
+	requires = { "nvim-lua/plenary.nvim" }
+}
+```
