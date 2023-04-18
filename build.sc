@@ -57,3 +57,16 @@ object `hello-world` extends BaseScalaModule {
   def mainClass: T[Option[String]] = Some("helloWorld.HelloWorld")
 }
 
+object `cats-example` extends BaseScalaModule {
+
+  def millSourcePath = millOuterCtx.millSourcePath / "catsExample"
+
+  def version = "0.0.1-SNAPSHOT"
+  def name = "cats-example"
+
+  def ivyDeps = Agg(
+    ivy"org.typelevel::cats-effect::3.4.8",
+  )
+
+  def mainClass: T[Option[String]] = Some("catsExample.Main")
+}
