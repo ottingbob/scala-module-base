@@ -1,4 +1,4 @@
-package catsExample
+package catsExample.hello
 
 import cats.effect.{ExitCode, IO, IOApp}
 
