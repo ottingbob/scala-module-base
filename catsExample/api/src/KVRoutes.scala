@@ -2,17 +2,14 @@ package catsExample.api
 
 import cats.data.OptionT
 import cats.effect.{IO}
-import org.http4s.HttpRoutes
-import org.typelevel.log4cats.slf4j.Slf4jLogger
-import org.http4s.Method._
-import org.http4s.dsl.Http4sDsl
-import io.circe.Encoder
 import io.circe.generic.auto._
-
-import java.time.{Instant}
+import org.http4s.HttpRoutes
+import org.http4s.Method._
+import org.http4s.circe.CirceEntityEncoder._
+import org.http4s.dsl.Http4sDsl
+import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 object KVRoutes {
-  import org.http4s.circe.CirceEntityEncoder._
 
   private val logger = Slf4jLogger.getLogger[IO]
 
@@ -24,6 +21,7 @@ object KVRoutes {
   /*
    * To explicitly define the encoder:
    *
+   * import io.circe.Encoder
    * import io.circe.literal._
    *
     private implicit val kvResponseEncoder: Encoder[this.KVResponse] =
@@ -44,12 +42,11 @@ object KVRoutes {
         service.handleRequest(id)
           .flatMap {
             case Some(resp) => Ok(resp)
-            case None => for {
-              _ <- logger.info(s"[$id] returned no record...")
-              resp <- NotFound()
-            } yield resp
+            case None => {
+              logger.info(s"[$id] returned no record...")
+              NotFound()
+            }
           }
     }
   }
-
 }
