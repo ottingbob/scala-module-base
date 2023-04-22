@@ -1,13 +1,15 @@
 package catsExample.api
 
-import cats.effect.{ExitCode, IO, IOApp}
+import cats.effect.ExitCode
+import cats.effect.IO
+import cats.effect.IOApp
 import cats.effect.kernel.Resource
-import com.comcast.ip4s.ipv4
 import com.comcast.ip4s.Port
-import org.http4s.ember.server.EmberServerBuilder
-import org.http4s.server.Router
+import com.comcast.ip4s.ipv4
 import org.http4s.Response
 import org.http4s.Status
+import org.http4s.ember.server.EmberServerBuilder
+import org.http4s.server.Router
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 object Main extends IOApp.Simple {

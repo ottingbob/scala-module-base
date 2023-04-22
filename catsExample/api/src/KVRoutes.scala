@@ -1,7 +1,7 @@
 package catsExample.api
 
 import cats.data.OptionT
-import cats.effect.{IO}
+import cats.effect.IO
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.Method._

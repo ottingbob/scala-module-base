@@ -7,8 +7,12 @@ old-build-files/
 /target/
 /project/
 /out/
+
+# Lsp files
 .bloop/
 .metals/
+.ammonite/
+metals.sbt
 
 # Package files
 *.jar

@@ -1,10 +1,10 @@
 package catsExample.api
 
 import cats.data.OptionT
-import cats.effect.{IO}
+import cats.effect.IO
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
-import java.time.{Instant}
+import java.time.Instant
 
 class KVService {
 

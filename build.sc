@@ -10,8 +10,12 @@ trait BaseScalaModule extends ScalaModule {
   def organizationName = "Robs dev"
 
   override def scalacOptions = Seq(
-      "-deprecation", // Emit warning and location for usages of deprecated APIs.
-    )
+    "-deprecation",     // Emit warning and location for usages of deprecated APIs.
+    // In Scala 3 the compiler option `warn-unused` is not available yet...
+    // Ref: https://scalacenter.github.io/scalafix/docs/rules/RemoveUnused.html
+    "-Wunused:all",     // Warn on all unused dependencies.
+    "-Xfatal-warnings", // Fail compilation if there are any warnings
+  )
 }
 
 object `bar` extends ScalaModule {
@@ -64,7 +68,7 @@ object `cats-example` extends Module {
   def catsEffect = ivy"org.typelevel::cats-effect::3.4.8"
   def catsLogger = ivy"org.typelevel::log4cats-slf4j::2.2.0"
   def catsLoggerCore = ivy"org.typelevel::log4cats-core::2.2.0"
-  //
+
   // Important Note:
   // ---------------
   // logback classic < 1.3 includes the `org.slf4j.impl.StaticLoggerBinder` which outputs
