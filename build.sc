@@ -61,7 +61,7 @@ object `hello-world` extends BaseScalaModule {
   def mainClass: T[Option[String]] = Some("helloWorld.HelloWorld")
 }
 
-object `cats-example` extends Module {
+object `cats` extends Module {
 
   def millSourcePath = millOuterCtx.millSourcePath / "catsExample"
 
