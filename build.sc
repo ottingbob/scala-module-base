@@ -1,3 +1,6 @@
+import $ivy.`com.lihaoyi::mill-contrib-docker:0.10.11`
+import contrib.docker.DockerModule
+
 import mill._
 import mill.scalalib._
 
@@ -16,6 +19,38 @@ trait BaseScalaModule extends ScalaModule {
     "-Wunused:all",     // Warn on all unused dependencies.
     "-Xfatal-warnings", // Fail compilation if there are any warnings
   )
+}
+
+trait BaseDockerModule extends DockerModule { outer: JavaModule =>
+
+  def dockerPackageName: String
+  def version: String
+
+  def baseImage = "ghcr.io/graalvm/jdk:ol9-java11-22.3.1"
+
+  /*
+    def imageTags  = T.command {
+      s"robs.dev/${dockerPackageName}:${version}-${commitHash()}"
+    }
+  */
+
+  // Runs on every build
+  def commitHash = T.task {
+    os.proc("git", "rev-parse", "HEAD").call().out.trim
+  }
+
+  // Make the docker task to run the docker build
+  object docker extends DockerConfig {
+
+    def tags = T {
+      Seq(s"robs.dev/${dockerPackageName}:${version}-${commitHash()}")
+    }
+
+    // TODO: Make the task to prune images that are not the most recent tag
+    def pruneImages = T {
+      os.proc("docker", "image", "ls").call().out.trim
+    }
+  }
 }
 
 object `bar` extends ScalaModule {
@@ -98,13 +133,15 @@ object `cats` extends Module {
     def name = "cats-hello"
   }
 
-  object api extends BaseScalaModule {
+  object api extends BaseScalaModule with BaseDockerModule {
 
     /*
       def resources = T.sources(
         millSourcePath / "resources"
       )
     */
+
+   def dockerPackageName = "scala/cats-api"
 
     def ivyDeps = super.ivyDeps() ++ Agg(
       // ORDER IS IMPORTANT -- logback needs to be first...
