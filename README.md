@@ -14,16 +14,16 @@ Here are some helpful tasks to use through mill
 ```bash
 # =====================================
 # Check out downloaded deps:
-$ ./mill bar.ivyDepsTree
+$ ./mill cats.api.ivyDepsTree
 
 # To download deps:
-$ ./mill bar.resolvedIvyDeps
+$ ./mill cats.api.resolvedIvyDeps
 
 # To compile:
-$ ./mill bar.compile
+$ ./mill cats.hello.compile
 
 # To run:
-$ ./mill bar.run
+$ ./mill cats.hello.run
 
 # TODO: Add in a test stage...
 # To test:
@@ -31,6 +31,9 @@ $ ./mill bar.run
 # To package:
 $ ./mill bar.assembly
 $ ./out/bar/assmbly.dest/out.jar
+
+# To Docker build:
+$ ./mill -i cats.api.docker.build
 ```
 
 ### Setup
