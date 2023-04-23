@@ -9,6 +9,17 @@ The current [`3.2.x`](https://www.scala-lang.org/download/3.2.2.html) version th
 
 I use [`make`](/Makefile) to help me run some of the mill / docker related commands for testing
 
+### Additional Features
+
+Here are some additional features that I want to build in for reference
+> - [ ] config retries
+> - [ ] config injection / via build task
+> - [ ] protobuf compilation
+> - [ ] streaming data example
+> - [ ] JSON API with postgres integration
+> - [ ] JSON API with streaming endpoint
+> - [ ] gRPC Server with protobuf
+
 ### Commands
 
 Here are some commands I setup through `make`
