@@ -28,27 +28,52 @@ trait BaseDockerModule extends DockerModule { outer: JavaModule =>
 
   def baseImage = "ghcr.io/graalvm/jdk:ol9-java11-22.3.1"
 
-  /*
-    def imageTags  = T.command {
-      s"robs.dev/${dockerPackageName}:${version}-${commitHash()}"
-    }
-  */
-
   // Runs on every build
   def commitHash = T.task {
     os.proc("git", "rev-parse", "HEAD").call().out.trim
   }
 
+  def imageTag = T.task { s"${version}-${commitHash()}"}
+  val imageName = () => { s"robs.dev/${dockerPackageName}" }
+
   // Make the docker task to run the docker build
   object docker extends DockerConfig {
 
     def tags = T {
-      Seq(s"robs.dev/${dockerPackageName}:${version}-${commitHash()}")
+      Seq(s"${imageName()}:${imageTag()}")
     }
 
-    // TODO: Make the task to prune images that are not the most recent tag
+    // Task to prune images that are not the most recent tag
     def pruneImages = T {
-      os.proc("docker", "image", "ls").call().out.trim
+      val _imageName = imageName()
+      val _imageTag = imageTag()
+      val dockerImages =
+        os.proc("docker", "image", "ls").call().out.trim.split("\\n")
+
+      val oldImages =
+        dockerImages
+          .drop(1)
+          .map(_.split("  +"))
+          .filter(_.nonEmpty)
+          .filter{
+            // Filter out the images with the `image` repository
+            case list => list(0) == _imageName && list(1) != _imageTag
+          }
+          .map {
+            // Return the tuples of related old image and tags
+            e => (e(0), e(1))
+          }
+
+      // Remove each of the old images
+      oldImages.foreach{
+        case (repo,tag) =>
+          println(
+            os.proc("docker", "image", "rm", s"${repo}:${tag}")
+              .call()
+              .out
+              .trim
+          )
+      }
     }
   }
 }
@@ -155,7 +180,7 @@ object `cats` extends Module {
       ivy"io.circe::circe-literal:0.14.3",
     )
 
-    def version = "0.1.1-SNAPSHOT"
+    def version = "0.1.2-SNAPSHOT"
     def name = "cats-api"
   }
 }

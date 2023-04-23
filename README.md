@@ -34,6 +34,9 @@ $ ./out/bar/assmbly.dest/out.jar
 
 # To Docker build:
 $ ./mill -i cats.api.docker.build
+
+# To prune old docker images:
+$ ./mill cats.api.docker.pruneImages
 ```
 
 ### Setup
