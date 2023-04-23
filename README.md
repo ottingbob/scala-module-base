@@ -7,7 +7,7 @@ It works with the [`build.sc`](/build.sc) file to be able to run tasks / targets
 
 The current [`3.2.x`](https://www.scala-lang.org/download/3.2.2.html) version that is being used is `3.2.2`.
 
-I use a [Makefile](/Makefile) to help me run some of the mill / docker related commands for testing
+I use [`make`](/Makefile) to help me run some of the mill / docker related commands for testing
 
 ### Commands
 
