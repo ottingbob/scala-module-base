@@ -7,10 +7,21 @@ It works with the [`build.sc`](/build.sc) file to be able to run tasks / targets
 
 The current [`3.2.x`](https://www.scala-lang.org/download/3.2.2.html) version that is being used is `3.2.2`.
 
+I use a [Makefile](/Makefile) to help me run some of the mill / docker related commands for testing
+
 ### Commands
 
-Here are some helpful tasks to use through mill
+Here are some commands I setup through `make`
+```bash
+# Build the cats.api project into a docker container and run the local containerized setup
+# for the API and related components through docker-compose
+$ make local-api
 
+# Test out curl commands against the `local-api` setup
+$ make test-local-api
+```
+
+Here are some helpful tasks to use through `mill`
 ```bash
 # =====================================
 # Check out downloaded deps:
