@@ -3,8 +3,26 @@ version: "3.8"
 services:
 
   cats-api:
-    image: "${CATS_API_IMAGE}"
+    profiles:
+      - "api"
+    image: "${CATS_API_IMAGE:-USE_MAKE_TARGET}"
     ports:
       - "8080:8080"
 
-  # TODO: Create service for PG database
+  postgres:
+    profiles:
+      - "api"
+    image: "postgres:15.2-bullseye"
+    environment:
+      - POSTGRES_USER=postgres-user
+      - POSTGRES_PASSWORD=postgres-pass
+      - POSTGRES_DB=kv-store
+    ports:
+      - "5432:5432"
+    volumes:
+      - "postgresql-data:/var/lib/postgresql/data"
+      - "./catsExample/api/src/resources/init.sql:/docker-entrypoint-initdb.d/init.sql"
+
+volumes:
+  postgresql-data:
+    driver: local

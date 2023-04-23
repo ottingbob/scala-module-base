@@ -8,7 +8,7 @@ local-api:
 			| cat out/cats/api/docker/fullImageName.json \
 			| jq -r '.value' \
 		) \
-		docker compose up cats-api
+		docker compose --profile api up
 
 .PHONY: test-local-api
 test-local-api:
