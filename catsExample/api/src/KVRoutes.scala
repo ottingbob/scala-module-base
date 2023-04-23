@@ -14,8 +14,8 @@ object KVRoutes {
   private val logger = Slf4jLogger.getLogger[IO]
 
   case class KVResponse(
-    id: Int,
-    timestamp: String,
+      id: Int,
+      timestamp: String
   )
 
   /*
@@ -26,12 +26,12 @@ object KVRoutes {
    *
     private implicit val kvResponseEncoder: Encoder[this.KVResponse] =
       Encoder.instance {
-        (resp: this.KVResponse) => 
+        (resp: this.KVResponse) =>
           json"""{
             "timestamp": ${resp.timestamp}
           }"""
       }
-  */
+   */
 
   def apply(service: KVService): HttpRoutes[IO] = {
     object dsl extends Http4sDsl[IO]; import dsl._
@@ -39,11 +39,22 @@ object KVRoutes {
     HttpRoutes.of[IO] {
       // Get a value from the store
       case req @ GET -> Root / id =>
-        service.handleRequest(id)
+        service
+          .handleRequest(id)
           .flatMap {
             case Some(resp) => Ok(resp)
             case None => {
               logger.info(s"[$id] returned no record...")
+              NotFound()
+            }
+          }
+      case req @ POST -> Root / "create" =>
+        service
+          .handleCreate()
+          .flatMap {
+            case Some(resp) => Ok(resp)
+            case None => {
+              logger.info(s"Unable to create KV record...")
               NotFound()
             }
           }

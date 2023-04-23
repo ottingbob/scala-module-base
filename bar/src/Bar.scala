@@ -1,6 +1,6 @@
 package bar
 
-import mainargs.{main}
+import mainargs.main
 
 object Bar {
 
@@ -10,4 +10,3 @@ object Bar {
   }
 
 }
-

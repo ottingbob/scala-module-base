@@ -23,7 +23,7 @@ object Main extends IOApp.Simple {
   // In this case we need to load in a repository and the application
   // configuration to connect to it.
   private case class Resources(
-    kvRepo: KVRepository
+      kvRepo: KVRepository
   )
 
   def run: IO[Unit] =
@@ -34,22 +34,24 @@ object Main extends IOApp.Simple {
     }
 
   private def serve(resources: Resources): IO[Unit] = {
-    logger.info("Starting KV Store API")
-    EmberServerBuilder.default[IO]
-      .withHost(ipv4"0.0.0.0")
-      .withPort(Port.fromInt(8080).get)
-      .withHttpApp(
-        Router("/store" ->
-          KVRoutes(new KVService(resources.kvRepo))
-        ).orNotFound
-      )
-      .withErrorHandler{
-        case err =>
-          logger.error(s"KV Store Api: $err")
+    logger.info(s"Starting KV Store API: ${resources.kvRepo.create()}") >>
+      EmberServerBuilder
+        .default[IO]
+        .withHost(ipv4"0.0.0.0")
+        .withPort(Port.fromInt(8080).get)
+        .withHttpApp(
+          Router(
+            "/store" ->
+              KVRoutes(new KVService(resources.kvRepo))
+          ).orNotFound
+        )
+        .withErrorHandler { case err =>
+          logger
+            .error(s"KV Store Api: $err")
             .as(Response(status = Status.InternalServerError))
-      }
-      .build
-      .useForever
+        }
+        .build
+        .useForever
   }
 
   private def resources: Resource[IO, Resources] =
@@ -60,13 +62,14 @@ object Main extends IOApp.Simple {
       xa <- HikariTransactor.newHikariTransactor[IO](
         "org.postgresql.Driver",
         // LOAD THESE VALUES INTO THE CONFIG
-        "jdpc:postgresql://localhost:5432/DB_NAME?sslmode=disable",
+        // "jdbc:postgresql://0.0.0.0:5432/DB_NAME?sslmode=disable",
+        // When running in docker need to call out the docker container name...
+        "jdbc:postgresql://scala-module-base-postgres-1:5432/kv-store?sslmode=disable",
         "postgres-user",
-        "posgres-pass",
+        "postgres-pass",
         ce
       )
     } yield Resources(
       kvRepo = KVRepository(xa)
     )
 }
-

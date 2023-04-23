@@ -12,6 +12,8 @@ I use [`make`](/Makefile) to help me run some of the mill / docker related comma
 ### Additional Features
 
 Here are some additional features that I want to build in for reference
+> - [ ] test examples
+> - [ ] build task for testing
 > - [ ] config retries
 > - [ ] config injection / via build task
 > - [ ] protobuf compilation
