@@ -139,6 +139,7 @@ object `cats` extends Module {
   def catsEffect = ivy"org.typelevel::cats-effect::3.4.8"
   def catsLogger = ivy"org.typelevel::log4cats-slf4j::2.2.0"
   def catsLoggerCore = ivy"org.typelevel::log4cats-core::2.2.0"
+  def config = ivy"com.typesafe:config:1.4.0"
 
   // Important Note:
   // ---------------
@@ -149,7 +150,6 @@ object `cats` extends Module {
   // These were other attempts at getting logging working:
   // def slf4j = "org.slf4j:slf4j-api:2.0.7"
   // def slf4j = "org.slf4j:slf4j-log4j12:2.0.7"
-  // def config = ivy"com.typesafe:config:1.4.0"
   // def scalaLogging = ivy"com.typesafe.scala-logging::scala-logging:3.1.0"
 
   def ivyDeps = Agg(
@@ -182,13 +182,21 @@ object `cats` extends Module {
     def ivyDeps = super.ivyDeps() ++ Agg(
       // ORDER IS IMPORTANT -- logback needs to be first...
       logback,
+      // API Server
       ivy"org.http4s::http4s-ember-server:0.23.12",
       ivy"org.http4s::http4s-server:0.23.12",
       ivy"org.http4s::http4s-dsl:0.23.12",
       ivy"org.http4s::http4s-circe:0.23.12",
+      // JSON serialization
       ivy"io.circe::circe-core:0.14.3",
       ivy"io.circe::circe-generic:0.14.3",
       ivy"io.circe::circe-literal:0.14.3",
+      // Postgres
+      ivy"org.tpolecat::doobie-core:1.0.0-RC1",
+      ivy"org.tpolecat::doobie-hikari:1.0.0-RC1",
+      ivy"org.tpolecat::doobie-postgres:1.0.0-RC1",
+      // Config
+      config,
     )
 
     def version = "0.1.2-SNAPSHOT"

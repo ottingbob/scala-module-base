@@ -6,7 +6,9 @@ import org.typelevel.log4cats.slf4j.Slf4jLogger
 
 import java.time.Instant
 
-class KVService {
+class KVService(
+  repo: KVRepository
+) {
 
   private val logger = Slf4jLogger.getLogger[IO]
 
