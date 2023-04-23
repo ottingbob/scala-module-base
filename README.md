@@ -65,3 +65,7 @@ use {
 	requires = { "nvim-lua/plenary.nvim" }
 }
 ```
+
+### References
+
+Uses the [Docker Plugin](https://com-lihaoyi.github.io/mill/mill/Plugin_Docker.html) in order to add `mill` tasks related to docker actions

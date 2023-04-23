@@ -21,11 +21,15 @@ trait BaseScalaModule extends ScalaModule {
   )
 }
 
+// Uses the Docker Plugin to configure docker tasks
+// https://com-lihaoyi.github.io/mill/mill/Plugin_Docker.html#_configuration
 trait BaseDockerModule extends DockerModule { outer: JavaModule =>
 
   def dockerPackageName: String
   def version: String
 
+  // Current GraalVM JDK Images
+  // https://github.com/graalvm/container/pkgs/container/jdk
   def baseImage = "ghcr.io/graalvm/jdk:ol9-java11-22.3.1"
 
   // Runs on every build
@@ -39,9 +43,16 @@ trait BaseDockerModule extends DockerModule { outer: JavaModule =>
   // Make the docker task to run the docker build
   object docker extends DockerConfig {
 
+    def fullImageName = T {
+      s"${imageName()}:${imageTag()}"
+    }
+
     def tags = T {
       Seq(s"${imageName()}:${imageTag()}")
     }
+
+    // TODO: Figure out how to set this at the implementation level...
+    def exposedPorts = Seq(8080)
 
     // Task to prune images that are not the most recent tag
     def pruneImages = T {
@@ -166,7 +177,7 @@ object `cats` extends Module {
       )
     */
 
-   def dockerPackageName = "scala/cats-api"
+    def dockerPackageName = "scala/cats-api"
 
     def ivyDeps = super.ivyDeps() ++ Agg(
       // ORDER IS IMPORTANT -- logback needs to be first...

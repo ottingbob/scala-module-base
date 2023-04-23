@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+
+  cats-api:
+    image: "${CATS_API_IMAGE}"
+    ports:
+      - "8080:8080"
+
+  # TODO: Create service for PG database
