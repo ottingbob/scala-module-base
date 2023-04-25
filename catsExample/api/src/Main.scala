@@ -15,6 +15,9 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Router
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
+import java.io.PrintWriter
+import java.io.StringWriter
+
 object Main extends IOApp.Simple {
 
   private val logger = Slf4jLogger.getLogger[IO]
@@ -34,7 +37,7 @@ object Main extends IOApp.Simple {
     }
 
   private def serve(resources: Resources): IO[Unit] = {
-    logger.info(s"Starting KV Store API: ${resources.kvRepo.create()}") >>
+    logger.info(s"Starting KV Store API") >>
       EmberServerBuilder
         .default[IO]
         .withHost(ipv4"0.0.0.0")
@@ -45,10 +48,14 @@ object Main extends IOApp.Simple {
               KVRoutes(new KVService(resources.kvRepo))
           ).orNotFound
         )
-        .withErrorHandler { case err =>
-          logger
-            .error(s"KV Store Api: $err")
-            .as(Response(status = Status.InternalServerError))
+        .withErrorHandler {
+          case err => {
+            val sw = new StringWriter()
+            err.printStackTrace(new PrintWriter(sw))
+            logger
+              .error(s"KV Store Api: ${sw.toString}")
+              .as(Response(status = Status.InternalServerError))
+          }
         }
         .build
         .useForever
