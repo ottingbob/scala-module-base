@@ -79,7 +79,7 @@ trait BaseDockerModule extends DockerModule { outer: JavaModule =>
       oldImages.foreach{
         case (repo,tag) =>
           println(
-            os.proc("docker", "image", "rm", s"${repo}:${tag}")
+            os.proc("docker", "image", "rm", "-f", s"${repo}:${tag}")
               .call()
               .out
               .trim
@@ -169,6 +169,42 @@ object `cats` extends Module {
     def name = "cats-hello"
   }
 
+  object `db-query` extends BaseScalaModule {
+
+    def millSourcePath = millOuterCtx.millSourcePath / "dbQuery"
+    /*
+      def resources = T.sources(
+        millSourcePath / "resources"
+      )
+    */
+    // def dockerPackageName = "scala/cats-api"
+
+    def ivyDeps = super.ivyDeps() ++ Agg(
+      // ORDER IS IMPORTANT -- logback needs to be first...
+      // logback,
+      // API Server
+      // ivy"org.http4s::http4s-ember-server:0.23.12",
+      // ivy"org.http4s::http4s-server:0.23.12",
+      // ivy"org.http4s::http4s-dsl:0.23.12",
+
+      // ivy"org.http4s::http4s-circe:0.23.12",
+      // JSON serialization
+      //
+      // ivy"io.circe::circe-core:0.14.3",
+      // ivy"io.circe::circe-generic:0.14.3",
+      // ivy"io.circe::circe-literal:0.14.3",
+      // Postgres
+      ivy"org.tpolecat::doobie-core:1.0.0-RC1",
+      ivy"org.tpolecat::doobie-hikari:1.0.0-RC1",
+      ivy"org.tpolecat::doobie-postgres:1.0.0-RC1",
+      // Config
+      // config,
+    )
+
+    def version = "0.0.1-SNAPSHOT"
+    def name = "cats-db-test"
+  }
+
   object api extends BaseScalaModule with BaseDockerModule {
 
     /*
@@ -199,7 +235,7 @@ object `cats` extends Module {
       config,
     )
 
-    def version = "0.1.2-SNAPSHOT"
+    def version = "0.2.1-SNAPSHOT"
     def name = "cats-api"
   }
 }
