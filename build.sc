@@ -235,7 +235,7 @@ object `cats` extends Module {
       config,
     )
 
-    def version = "0.2.1-SNAPSHOT"
+    def version = "0.2.2-SNAPSHOT"
     def name = "cats-api"
   }
 }

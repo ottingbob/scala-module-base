@@ -39,6 +39,8 @@ object KVRoutes {
       }
    */
 
+  // TODO: Check if there can be multiple routes or maybe split them up
+  // into different groups ..?
   def apply(service: KVService): HttpRoutes[IO] = {
     object dsl extends Http4sDsl[IO]; import dsl._
 

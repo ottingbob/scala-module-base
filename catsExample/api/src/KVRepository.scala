@@ -21,7 +21,7 @@ trait KVRepository {
   def create(): IO[Int]
 
   def createCountry(): IO[Int]
-  def listCountries(): IO[List[Country]]
+  def listCountries(): IO[Seq[Country]]
 }
 
 object KVRepository {
@@ -65,7 +65,7 @@ object KVRepository {
           .transact(xa)
       }
 
-      override def listCountries(): IO[List[Country]] =
+      override def listCountries(): IO[Seq[Country]] =
         sql"""SELECT code, name, population
              |FROM countries
               """.stripMargin

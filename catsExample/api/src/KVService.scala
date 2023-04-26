@@ -14,7 +14,7 @@ class KVService(
 
   private val logger = Slf4jLogger.getLogger[IO]
 
-  // DEBUG AND TRY NEW TABLE...
+  // TODO: Make the response be the record that was inserted
   def createCountryReq(): IO[Option[KVRoutes.CountryJson]] =
     repo
       .createCountry()
@@ -28,43 +28,30 @@ class KVService(
       countries <- repo
         .listCountries()
         .handleErrors()
-        .map(c =>
-          KVRoutes.CountryJson(
-            code = c.code,
-            name = c.name,
-            population = c.population
-          )
-        )
-      // resp <- repo.test_get().handleErrors()
-      _ <- logger.info("how is this still running")
-
-      now <- IO(Instant.now())
-      // _ <- logger.info(s"KV Record response: ${resp}")
     } yield Some(
-      KVRoutes.KVResponse(
-        // id = Integer(id),
-        id = 5,
-        timestamp = s"$now"
-      )
+      countries.map(toCountryJson)
     )
 
+  def toCountryJson(model: KVRepository.Country): KVRoutes.CountryJson =
+    KVRoutes.CountryJson(
+      code = model.code,
+      name = model.name,
+      population = model.population
+    )
+
+  // TODO: Actually handle the get on the provided ID
   def handleRequest(id: String): IO[Option[KVRoutes.KVResponse]] =
     for {
-      _ <- logger.info("about to bomb out")
       resp <- repo.get(id).handleErrors()
-      // resp <- repo.test_get().handleErrors()
-      _ <- logger.info("how is this still running")
-
       now <- IO(Instant.now())
-      // _ <- logger.info(s"KV Record response: ${resp}")
     } yield Some(
       KVRoutes.KVResponse(
-        // id = Integer(id),
         id = 5,
         timestamp = s"$now"
       )
     )
 
+  // TODO: Actually return the created record from the db
   def handleCreate(): IO[Option[KVRoutes.KVResponse]] =
     for {
       record <- repo.create()
