@@ -134,7 +134,24 @@ object `hello-world` extends BaseScalaModule {
   def mainClass: T[Option[String]] = Some("helloWorld.HelloWorld")
 }
 
-object `cats` extends Module {
+object cask extends Module {
+
+  def millSourcePath = millOuterCtx.millSourcePath / "caskServer"
+
+  object api extends BaseScalaModule with BaseDockerModule {
+
+    def dockerPackageName = "scala/cask-api"
+
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::cask:0.9.1"
+    )
+
+    def version = "0.1.2-SNAPSHOT"
+    def name = "cask-api"
+  }
+}
+
+object cats extends Module {
 
   def millSourcePath = millOuterCtx.millSourcePath / "catsExample"
 

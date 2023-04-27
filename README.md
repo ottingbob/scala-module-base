@@ -13,7 +13,8 @@ I use [`make`](/Makefile) to help me run some of the mill / docker related comma
 
 Here are some additional features / projects that I want to build in for reference
 > - [ ] library code & build task
-> - [ ] Cask (Scala Flask) Server example
+> - [x] Cask (Scala Flask) Server example
+> - [ ] Cask multiple routes & tests
 > - [ ] test examples
 > - [ ] build task for testing
 > - [ ] config retries
@@ -63,6 +64,9 @@ $ ./mill -i cats.api.docker.build
 
 # To prune old docker images:
 $ ./mill cats.api.docker.pruneImages
+
+# Watch task run background and rebuild on changes
+$ ./mill -w cask.api.runBackground
 ```
 
 ### Setup
