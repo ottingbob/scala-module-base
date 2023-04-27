@@ -51,7 +51,7 @@ trait BaseDockerModule extends DockerModule { outer: JavaModule =>
       Seq(s"${imageName()}:${imageTag()}")
     }
 
-    // TODO: Figure out how to set this at the implementation level...
+    // TODO: Figure out how to override this at the implementation level...
     def exposedPorts = Seq(8080)
 
     // Task to prune images that are not the most recent tag
@@ -79,6 +79,8 @@ trait BaseDockerModule extends DockerModule { outer: JavaModule =>
       oldImages.foreach{
         case (repo,tag) =>
           println(
+            // Chose to forcefully remove images `-f` in order to remove them even if
+            // there are still container references that are using them
             os.proc("docker", "image", "rm", "-f", s"${repo}:${tag}")
               .call()
               .out
@@ -159,6 +161,25 @@ object `cats` extends Module {
     catsLoggerCore,
   )
 
+  def pgDeps = Agg(
+    ivy"org.tpolecat::doobie-core:1.0.0-RC1",
+    ivy"org.tpolecat::doobie-hikari:1.0.0-RC1",
+    ivy"org.tpolecat::doobie-postgres:1.0.0-RC1"
+  )
+
+  def httpApiDeps = Agg(
+    // Http API Server
+    ivy"org.http4s::http4s-ember-server:0.23.12",
+    ivy"org.http4s::http4s-server:0.23.12",
+    ivy"org.http4s::http4s-dsl:0.23.12",
+    ivy"org.http4s::http4s-circe:0.23.12",
+
+    // JSON serialization
+    ivy"io.circe::circe-core:0.14.3",
+    ivy"io.circe::circe-generic:0.14.3",
+    ivy"io.circe::circe-literal:0.14.3",
+  )
+
   object hello extends BaseScalaModule {
 
     def ivyDeps = Agg(
@@ -172,36 +193,10 @@ object `cats` extends Module {
   object `db-query` extends BaseScalaModule {
 
     def millSourcePath = millOuterCtx.millSourcePath / "dbQuery"
-    /*
-      def resources = T.sources(
-        millSourcePath / "resources"
-      )
-    */
-    // def dockerPackageName = "scala/cats-api"
 
-    def ivyDeps = super.ivyDeps() ++ Agg(
-      // ORDER IS IMPORTANT -- logback needs to be first...
-      // logback,
-      // API Server
-      // ivy"org.http4s::http4s-ember-server:0.23.12",
-      // ivy"org.http4s::http4s-server:0.23.12",
-      // ivy"org.http4s::http4s-dsl:0.23.12",
+    def ivyDeps = super.ivyDeps() ++ pgDeps
 
-      // ivy"org.http4s::http4s-circe:0.23.12",
-      // JSON serialization
-      //
-      // ivy"io.circe::circe-core:0.14.3",
-      // ivy"io.circe::circe-generic:0.14.3",
-      // ivy"io.circe::circe-literal:0.14.3",
-      // Postgres
-      ivy"org.tpolecat::doobie-core:1.0.0-RC1",
-      ivy"org.tpolecat::doobie-hikari:1.0.0-RC1",
-      ivy"org.tpolecat::doobie-postgres:1.0.0-RC1",
-      // Config
-      // config,
-    )
-
-    def version = "0.0.1-SNAPSHOT"
+    def version = "0.1.1-SNAPSHOT"
     def name = "cats-db-test"
   }
 
@@ -218,22 +213,8 @@ object `cats` extends Module {
     def ivyDeps = super.ivyDeps() ++ Agg(
       // ORDER IS IMPORTANT -- logback needs to be first...
       logback,
-      // API Server
-      ivy"org.http4s::http4s-ember-server:0.23.12",
-      ivy"org.http4s::http4s-server:0.23.12",
-      ivy"org.http4s::http4s-dsl:0.23.12",
-      ivy"org.http4s::http4s-circe:0.23.12",
-      // JSON serialization
-      ivy"io.circe::circe-core:0.14.3",
-      ivy"io.circe::circe-generic:0.14.3",
-      ivy"io.circe::circe-literal:0.14.3",
-      // Postgres
-      ivy"org.tpolecat::doobie-core:1.0.0-RC1",
-      ivy"org.tpolecat::doobie-hikari:1.0.0-RC1",
-      ivy"org.tpolecat::doobie-postgres:1.0.0-RC1",
-      // Config
-      config,
-    )
+      config
+    ) ++ httpApiDeps ++ pgDeps
 
     def version = "0.2.2-SNAPSHOT"
     def name = "cats-api"
