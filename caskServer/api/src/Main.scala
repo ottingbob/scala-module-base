@@ -44,7 +44,6 @@ case class MovieRoutes() extends cask.Routes {
 
   @cask.get("/movies")
   def listMovies(request: Request) = {
-    println(s"Database: {${MinimalDb.database}}")
     upickle.default.write(
       MinimalDb.database
         .map((key: UUID, movie: Model.Movie) => movie)

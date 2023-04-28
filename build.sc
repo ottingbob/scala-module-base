@@ -156,7 +156,11 @@ object cask extends Module {
     def version = "0.1.4-SNAPSHOT"
     def name = "cask-api"
 
-    object test extends Tests with MunitTests
+    object test extends Tests with MunitTests {
+      def ivyDeps = super.ivyDeps() ++ Agg(
+          ivy"com.lihaoyi::requests::0.6.9",
+        )
+    }
   }
 }
 
