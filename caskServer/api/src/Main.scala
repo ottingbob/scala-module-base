@@ -15,10 +15,18 @@ object Model {
       director: String,
       year: Int
   )
+  object Movie {
+    implicit def movieRW: upickle.default.ReadWriter[Movie] =
+      upickle.default.macroRW[Movie]
+  }
 }
 
 object MinimalDb {
-  val database = HashMap.empty[UUID, Model.Movie]
+  var database = HashMap[UUID, Model.Movie](
+    (UUID.randomUUID(), Model.Movie("attack of the clones", "richard blatte", 2011)),
+    (UUID.randomUUID(), Model.Movie("when in rome", "michaela forrte", 1998)),
+    (UUID.randomUUID(), Model.Movie("abyss", "tammy theta", 2007))
+  )
 }
 
 // TODO: See what we can do with context
@@ -34,22 +42,13 @@ case class BaseRoutes() extends cask.Routes {
 
 case class MovieRoutes() extends cask.Routes {
 
-  // case class Movie(checked: Boolean, text: String)
-  object Movie {
-    implicit def todoRW: upickle.default.ReadWriter[Model.Movie] =
-      upickle.default.macroRW[Model.Movie]
-  }
-
-  // TODO: Hook this up to the minimal db
   @cask.get("/movies")
   def listMovies(request: Request) = {
-    // MinimalDb.database.get(UUID.randomUUID()).toString()
     println(s"Database: {${MinimalDb.database}}")
-
-    MinimalDb.database
-      .map((key: UUID, movie: Model.Movie) => s"${key}: ${movie}")
-      // TODO: Map the model movie to the JSON response defined in this class...
-      .reduce((resp, moviePair) => s"$resp,\n$moviePair")
+    upickle.default.write(
+      MinimalDb.database
+        .map((key: UUID, movie: Model.Movie) => movie)
+    )
   }
 
   @cask.post("/movies")
