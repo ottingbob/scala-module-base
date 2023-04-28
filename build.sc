@@ -146,7 +146,7 @@ object cask extends Module {
       ivy"com.lihaoyi::cask:0.9.1"
     )
 
-    def version = "0.1.2-SNAPSHOT"
+    def version = "0.1.3-SNAPSHOT"
     def name = "cask-api"
   }
 }
