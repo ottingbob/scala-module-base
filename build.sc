@@ -19,6 +19,13 @@ trait BaseScalaModule extends ScalaModule {
     "-Wunused:all",     // Warn on all unused dependencies.
     "-Xfatal-warnings", // Fail compilation if there are any warnings
   )
+
+  // Add unit test capabilities to build targets
+  trait MunitTests extends TestModule.Munit {
+    def ivyDeps = Agg(
+        ivy"org.scalameta::munit:0.7.29"
+      )
+  }
 }
 
 // Uses the Docker Plugin to configure docker tasks
@@ -143,11 +150,13 @@ object cask extends Module {
     def dockerPackageName = "scala/cask-api"
 
     def ivyDeps = Agg(
-      ivy"com.lihaoyi::cask:0.9.1"
+      ivy"com.lihaoyi::cask:0.9.1",
     )
 
-    def version = "0.1.3-SNAPSHOT"
+    def version = "0.1.4-SNAPSHOT"
     def name = "cask-api"
+
+    object test extends Tests with MunitTests
   }
 }
 
