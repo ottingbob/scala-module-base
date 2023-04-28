@@ -19,6 +19,17 @@ object Model {
     implicit def movieRW: upickle.default.ReadWriter[Movie] =
       upickle.default.macroRW[Movie]
   }
+
+  case class MovieApiModel(
+      id: String,
+      name: String,
+      director: String,
+      year: Int
+  )
+  object MovieApiModel {
+    implicit def movieRW: upickle.default.ReadWriter[MovieApiModel] =
+      upickle.default.macroRW[MovieApiModel]
+  }
 }
 
 object MinimalDb {
@@ -50,6 +61,19 @@ case class MovieRoutes() extends cask.Routes {
     )
   }
 
+  // TODO: create a mapping method to get the db model to convert
+  // into an api model
+  @cask.get("/movies/:id")
+  def getMovie(request: Request, id: String) = {
+    upickle.default.write(
+      MinimalDb.database.get(UUID.fromString(id)).get
+    )
+    // match {
+    // case Some(value) => upickle.default.write(value)
+    // case None        => Response("No movie found with that ID", 404, Seq(), Seq())
+    // }
+  }
+
   @cask.post("/movies")
   def createMovie(request: Request) =
     try {
@@ -62,8 +86,18 @@ case class MovieRoutes() extends cask.Routes {
         year = movieJson("year").num.toInt
       )
 
-      MinimalDb.database += (UUID.randomUUID() -> movie)
-      Response(s"Created Movie: ${movie}", 201, Seq(), Seq())
+      val createdId = UUID.randomUUID()
+      MinimalDb.database += (createdId -> movie)
+
+      val movieResponseJson = upickle.default.write(
+        Model.MovieApiModel(
+          createdId.toString,
+          movie.name,
+          movie.director,
+          movie.year
+        )
+      )
+      Response(movieResponseJson, 201, Seq(), Seq())
     } catch
       case nsee: java.util.NoSuchElementException =>
         Response(s"failed with invalid movie data: $nsee", 400, Seq(), Seq())
