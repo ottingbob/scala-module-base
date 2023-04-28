@@ -27,7 +27,7 @@ object Model {
       year: Int
   )
   object MovieApiModel {
-    implicit def movieRW: upickle.default.ReadWriter[MovieApiModel] =
+    implicit def movieApiRW: upickle.default.ReadWriter[MovieApiModel] =
       upickle.default.macroRW[MovieApiModel]
   }
 }
@@ -44,9 +44,8 @@ object MinimalDb {
 case class BaseRoutes() extends cask.Routes {
 // case class BaseRoutes()(implicit cc: castor.Context, log: cask.Logger) extends cask.Routes {
   @cask.get("/")
-  def hello() = {
+  def hello() =
     "Hello World!"
-  }
 
   initialize()
 }
@@ -54,25 +53,35 @@ case class BaseRoutes() extends cask.Routes {
 case class MovieRoutes() extends cask.Routes {
 
   @cask.get("/movies")
-  def listMovies(request: Request) = {
+  def listMovies(request: Request) =
     upickle.default.write(
       MinimalDb.database
         .map((key: UUID, movie: Model.Movie) => movie)
     )
-  }
 
   // TODO: create a mapping method to get the db model to convert
   // into an api model
   @cask.get("/movies/:id")
-  def getMovie(request: Request, id: String) = {
-    upickle.default.write(
-      MinimalDb.database.get(UUID.fromString(id)).get
-    )
+  def getMovie(request: Request, id: String) =
+    try {
+      // FIXME: Technically this will not set `Content-Length` / `Content`
+      // so would need to rework how this is returning those related headers
+      Response(
+        upickle.default.write(
+          MinimalDb.database.get(UUID.fromString(id)).get
+        ),
+        200,
+        Seq(),
+        Seq()
+      )
+    } catch
+      case nsee: java.util.NoSuchElementException =>
+        Response(s"failed with invalid movie data: $nsee", 400, Seq(), Seq())
+
     // match {
     // case Some(value) => upickle.default.write(value)
     // case None        => Response("No movie found with that ID", 404, Seq(), Seq())
     // }
-  }
 
   @cask.post("/movies")
   def createMovie(request: Request) =

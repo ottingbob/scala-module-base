@@ -22,6 +22,42 @@ class CaskServerSpec extends FunSuite {
   // TODO: Optionally use an munit fixture
   // override def munitFixtures: Seq[Fixture[_]] = Seq(withServer)
 
+  test("should respond to hello on the base route") {
+    withServer(MinimalApp) { host =>
+      assertEquals(
+        requests.get(s"$host/").text(),
+        "Hello World!"
+      )
+    }
+  }
+
+  test("should echo headers") {
+    val expected = s"""accept: */*
+user-agent: requests-scala
+host: localhost:8081
+cache-control: no-cache
+pragma: no-cache
+connection: keep-alive
+accept-encoding: gzip, deflate"""
+
+    withServer(MinimalApp) { host =>
+      assertEquals(
+        requests.get(s"$host/headers").text().split("\n").reduce((r, p) => s"$r,$p"),
+        expected.split("\n").reduce((r, p) => s"$r,$p")
+      )
+    }
+  }
+
+  test("should reverse post body") {
+    val toReverse = scala.util.Random.alphanumeric.take(25).mkString
+    withServer(MinimalApp) { host =>
+      assertEquals(
+        requests.post(s"$host/reverse", data = toReverse).text(),
+        toReverse.reverse
+      )
+    }
+  }
+
   test("should list movies") {
     withServer(MinimalApp) { host =>
       assertEquals(
@@ -30,6 +66,17 @@ class CaskServerSpec extends FunSuite {
           MinimalDb.database
             .map((key: UUID, movie: Model.Movie) => movie)
         )
+      )
+    }
+  }
+
+  test("should fail on a non-existent movie") {
+    withServer(MinimalApp) { host =>
+      val invalidUUID = UUID.randomUUID()
+      // TODO: Figure out how to get the expected HTTP failure response from the server
+      intercept[requests.RequestFailedException](
+        requests
+          .get(s"$host/movies/$invalidUUID")
       )
     }
   }

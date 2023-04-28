@@ -14,9 +14,9 @@ I use [`make`](/Makefile) to help me run some of the mill / docker related comma
 Here are some additional features / projects that I want to build in for reference
 > - [ ] library code & build task
 > - [x] Cask (Scala Flask) Server example
-> - [ ] Cask multiple routes & tests
+> - [x] Cask multiple routes & tests
 > - [ ] test examples
-> - [ ] build task for testing
+> - [x] build task for testing
 > - [ ] config retries
 > - [ ] config injection / via build task
 > - [ ] protobuf compilation

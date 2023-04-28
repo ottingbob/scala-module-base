@@ -1,13 +1,18 @@
 import $ivy.`com.lihaoyi::mill-contrib-docker:0.10.11`
+import $ivy.`com.lihaoyi::mill-contrib-scoverage:0.10.11`
+
 import contrib.docker.DockerModule
+import contrib.scoverage.ScoverageModule
 
 import mill._
 import mill.scalalib._
 
 val ScalaVersion = "3.2.2"
+val ScoverageVersion = "2.0.0"
 
-trait BaseScalaModule extends ScalaModule {
+trait BaseScalaModule extends ScalaModule with ScoverageModule {
   def scalaVersion = ScalaVersion
+  def scoverageVersion = ScoverageVersion
 
   def organization = "robs.dev"
   def organizationName = "Robs dev"
@@ -20,8 +25,10 @@ trait BaseScalaModule extends ScalaModule {
     "-Xfatal-warnings", // Fail compilation if there are any warnings
   )
 
+
   // Add unit test capabilities to build targets
-  trait MunitTests extends TestModule.Munit {
+  trait MunitTests extends TestModule.Munit with ScoverageTests {
+
     def ivyDeps = Agg(
         ivy"org.scalameta::munit:0.7.29"
       )
@@ -153,7 +160,7 @@ object cask extends Module {
       ivy"com.lihaoyi::cask:0.9.1",
     )
 
-    def version = "0.1.4-SNAPSHOT"
+    def version = "0.1.5-SNAPSHOT"
     def name = "cask-api"
 
     object test extends Tests with MunitTests {
