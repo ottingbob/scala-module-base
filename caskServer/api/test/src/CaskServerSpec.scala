@@ -33,12 +33,12 @@ class CaskServerSpec extends FunSuite {
 
   test("should echo headers") {
     val expected = s"""accept: */*
-user-agent: requests-scala
-host: localhost:8081
-cache-control: no-cache
-pragma: no-cache
-connection: keep-alive
-accept-encoding: gzip, deflate"""
+                      |user-agent: requests-scala
+                      |host: localhost:8081
+                      |cache-control: no-cache
+                      |pragma: no-cache
+                      |connection: keep-alive
+                      |accept-encoding: gzip, deflate""".stripMargin
 
     withServer(MinimalApp) { host =>
       assertEquals(
@@ -73,11 +73,17 @@ accept-encoding: gzip, deflate"""
   test("should fail on a non-existent movie") {
     withServer(MinimalApp) { host =>
       val invalidUUID = UUID.randomUUID()
-      // TODO: Figure out how to get the expected HTTP failure response from the server
-      intercept[requests.RequestFailedException](
+      /*
+       * TODO: Figure out how to get the expected HTTP failure response from the server
+       *
+        interceptMessage[requests.RequestFailedException](
+          "failed with invalid movie data: java.util.NoSuchElementException: None.get"
+        )
+       */
+      intercept[requests.RequestFailedException] {
         requests
           .get(s"$host/movies/$invalidUUID")
-      )
+      }
     }
   }
 

@@ -8,7 +8,7 @@ import mill._
 import mill.scalalib._
 
 val ScalaVersion = "3.2.2"
-val ScoverageVersion = "2.0.0"
+val ScoverageVersion = "2.0.8"
 
 trait BaseScalaModule extends ScalaModule with ScoverageModule {
   def scalaVersion = ScalaVersion
