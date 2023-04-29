@@ -26,7 +26,8 @@ object Main extends IOApp.Simple {
   // In this case we need to load in a repository and the application
   // configuration to connect to it.
   private case class Resources(
-      kvRepo: KVRepository
+      kvRepo: KVRepository,
+      countryRepo: CountryRepository
   )
 
   def run: IO[Unit] =
@@ -44,8 +45,8 @@ object Main extends IOApp.Simple {
         .withPort(Port.fromInt(8080).get)
         .withHttpApp(
           Router(
-            "/store" ->
-              KVRoutes(new KVService(resources.kvRepo))
+            "/store" -> KVRoutes(new KVService(resources.kvRepo)),
+            "/countries" -> CountryRoutes(new CountryService(resources.countryRepo)).countryRoutes
           ).orNotFound
         )
         .withErrorHandler {
@@ -77,6 +78,7 @@ object Main extends IOApp.Simple {
         ce
       )
     } yield Resources(
-      kvRepo = KVRepository(xa)
+      kvRepo = KVRepository(xa),
+      countryRepo = CountryRepository(xa)
     )
 }

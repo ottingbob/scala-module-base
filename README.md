@@ -21,7 +21,7 @@ Here are some additional features / projects that I want to build in for referen
 > - [ ] config injection / via build task
 > - [ ] protobuf compilation
 > - [ ] streaming data example
-> - [ ] JSON API with postgres integration
+> - [x] JSON API with postgres integration
 > - [ ] JSON API with streaming endpoint
 > - [ ] gRPC Server with protobuf
 

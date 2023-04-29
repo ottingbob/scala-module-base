@@ -253,7 +253,7 @@ object cats extends Module {
       config
     ) ++ httpApiDeps ++ pgDeps
 
-    def version = "0.2.2-SNAPSHOT"
+    def version = "0.2.3-SNAPSHOT"
     def name = "cats-api"
   }
 }

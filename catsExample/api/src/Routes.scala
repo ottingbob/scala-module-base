@@ -2,12 +2,53 @@ package catsExample.api
 
 import cats.data.OptionT
 import cats.effect.IO
+import cats.implicits._
 import io.circe.generic.auto._
 import org.http4s.HttpRoutes
 import org.http4s.Method._
 import org.http4s.circe.CirceEntityEncoder._
 import org.http4s.dsl.Http4sDsl
+import org.http4s.dsl.io._
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+
+class CountryRoutes(service: CountryService) {
+
+  private val logger = Slf4jLogger.getLogger[IO]
+
+  // Unsure what the implications are of not using an `apply` method here...
+  val countryRoutes = HttpRoutes.of[IO] {
+    case req @ POST -> Root =>
+      service
+        .createCountryReq()
+        .flatMap {
+          case Some(resp) => Ok(resp)
+          case None => {
+            logger.info(s"Unable to create country record...")
+            NotFound()
+          }
+        }
+
+    case req @ GET -> Root =>
+      service
+        .listCountriesReq()
+        .flatMap {
+          case Some(resp) => Ok(resp)
+          case None => {
+            logger.info(s"countries request returned no records...")
+            NotFound()
+          }
+        }
+  }
+}
+
+object CountryRoutes {
+
+  case class CountryJson(
+      code: String,
+      name: String,
+      population: Int
+  )
+}
 
 object KVRoutes {
 
@@ -16,12 +57,6 @@ object KVRoutes {
   case class KVResponse(
       id: Int,
       timestamp: String
-  )
-
-  case class CountryJson(
-      code: String,
-      name: String,
-      population: Int
   )
 
   /*
@@ -39,34 +74,10 @@ object KVRoutes {
       }
    */
 
-  // TODO: Check if there can be multiple routes or maybe split them up
-  // into different groups ..?
   def apply(service: KVService): HttpRoutes[IO] = {
     object dsl extends Http4sDsl[IO]; import dsl._
 
     HttpRoutes.of[IO] {
-      case req @ POST -> Root / "countries" / "create" =>
-        service
-          .createCountryReq()
-          .flatMap {
-            case Some(resp) => Ok(resp)
-            case None => {
-              logger.info(s"Unable to create KV record...")
-              NotFound()
-            }
-          }
-
-      case req @ GET -> Root / "countries" =>
-        service
-          .handleCountriesReq()
-          .flatMap {
-            case Some(resp) => Ok(resp)
-            case None => {
-              logger.info(s"countries request returned no records...")
-              NotFound()
-            }
-          }
-
       // Get a value from the store
       case req @ GET -> Root / id =>
         service

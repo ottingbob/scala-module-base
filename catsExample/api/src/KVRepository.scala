@@ -19,9 +19,6 @@ trait KVRepository {
   def test_get(): IO[String]
   def get(id: String): IO[Either[Exception, KVRecord]]
   def create(): IO[Int]
-
-  def createCountry(): IO[Int]
-  def listCountries(): IO[Seq[Country]]
 }
 
 object KVRepository {
@@ -31,49 +28,13 @@ object KVRepository {
   case class KVRecord(
       // UUID
       id: String,
-      // createdAt: Option[Timestamp]
       description: Option[String],
       createdAt: Timestamp,
       updatedAt: Option[Timestamp]
   )
 
-  // TODO: This should be split out...
-  final case class Country(
-      // Only 3 chars...
-      code: String,
-      name: String,
-      population: Int
-  )
-
   def apply(xa: Transactor[IO]): KVRepository =
     new KVRepository {
-
-      // TODO: Split out to another repo and make methods for adding countries...
-
-      // Create a random country
-      override def createCountry(): IO[Int] = {
-        val code = scala.util.Random.alphanumeric.take(3).mkString
-        val name = scala.util.Random.alphanumeric.take(25).mkString
-        val population = scala.util.Random.nextInt(500)
-        logger.info(s"$code, $name, $population")
-        // val country = Country(code, name, population)
-        sql"""INSERT INTO
-                  countries
-                VALUES
-                  ($code, $name, $population)
-              """.update.run
-          .transact(xa)
-      }
-
-      override def listCountries(): IO[Seq[Country]] =
-        sql"""SELECT code, name, population
-             |FROM countries
-              """.stripMargin
-          .query[Country]
-          .stream
-          .compile
-          .toList
-          .transact(xa)
 
       override def test_get(): IO[String] =
         sql"""SELECT id from kv_items WHERE id = '312aae5b-16aa-4835-9e2f-e27a15117993 '"""
@@ -104,16 +65,19 @@ object KVRepository {
             }
           })
           .transact(xa)
+
         /*
-              .handleErrorWith { case err: SQLException =>
-                err.getSQLState() match {
-                  case sqlstate.class42.UNDEFINED_TABLE.value => IO.none
-                  case _ => {
-                    logger.error(err.getMessage()) >>
-                      IO.raiseError(err)
-                  }
-                }
+         * TODO: Add better error handling
+         *
+          .handleErrorWith { case err: SQLException =>
+            err.getSQLState() match {
+              case sqlstate.class42.UNDEFINED_TABLE.value => IO.none
+              case _ => {
+                logger.error(err.getMessage()) >>
+                  IO.raiseError(err)
               }
+            }
+          }
          */
       }
 
